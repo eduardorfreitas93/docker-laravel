@@ -24,6 +24,7 @@ steps:
   name: 'gcr.io/cloud-builders/docker'
   args: ['exec','-t','app','php','/var/www/vendor/bin/phpunit','-c','/var/www/phpunit.xml']
 
+# Gerando imagem docker
 - id: "Building image using Dockerfile.prod"
   name: 'gcr.io/cloud-builders/docker'
   args: ['build','-t','gcr.io/$PROJECT_ID/app-laravel:$SHORT_SHA','-f','Dockerfile.prod','.']
@@ -32,13 +33,14 @@ steps:
   name: 'gcr.io/cloud-builders/docker'
   args: ['push','gcr.io/$PROJECT_ID/app-laravel:$SHORT_SHA']
 
+# Configurando o arquivo de deployment do k8s
 - id: "Ajusting deployment file - k8s"
   name: 'gcr.io/cloud-builders/gcloud'
   entrypoint: '/bin/bash'
   args:
     - '-c'
     - |
-      sed 's#img-app-deployment#gcr.io/$PROJECT_ID/app-laravel:$SHORT_SHA#g' .k8s/app/deployment.yaml > k8s/app/deployment-new.yaml;
+      sed 's#img-app-deployment#gcr.io/$PROJECT_ID/app-laravel:$SHORT_SHA#g' ./k8s/app/deployment.yaml > ./k8s/app/deployment-new.yaml;
       cat k8s/app/deployment-new.yaml;
 
 - id: "Deploying k8s"
