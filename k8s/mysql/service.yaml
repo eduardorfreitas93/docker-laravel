@@ -8,4 +8,4 @@ spec:
   selector:
     app: mysql-server
     tier: db
-  clusterIP: None
+  type: LoadBalancer
